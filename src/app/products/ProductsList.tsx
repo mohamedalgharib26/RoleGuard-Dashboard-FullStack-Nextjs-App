@@ -6,7 +6,7 @@ import { MemoizedProductItem } from "./SingleProduct";
 import AddProduct from "./AddProduct";
 import toast from "react-hot-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchProducts, PostData } from "@/store/Api/ReactQuery";
+import { fetchApi, PostData } from "@/store/Api/ReactQuery";
 
 type props = {
   initialProducts: Product[];
@@ -16,7 +16,7 @@ const ProductsList: React.FC<props> = ({ initialProducts }) => {
 
   const { data: products } = useQuery({
     queryKey: ["products"],
-    queryFn: fetchProducts,
+    queryFn: () => fetchApi<Product>("products"),
     initialData: initialProducts,
   });
 

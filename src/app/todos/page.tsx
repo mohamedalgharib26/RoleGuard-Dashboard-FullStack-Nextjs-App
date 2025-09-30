@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SingleTodo from "./Todo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchTodos, fetchUsers, PostData } from "@/store/Api/ReactQuery";
+import { fetchApi, PostData, User } from "@/store/Api/ReactQuery";
 import { TodoWithUser } from "../api/todos/route";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Prisma, Products, Todo } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import toast from "react-hot-toast";
 import Loader from "@/Components/Loader";
+import Pagination from "@/Components/Pagination";
 
 const TodoList = () => {
   const [pageNumber, SetPage] = useState(1);
@@ -19,13 +19,17 @@ const TodoList = () => {
   };
   const { data: items, isLoading } = useQuery({
     queryKey: ["Todos", pageNumber],
-    queryFn: () => fetchTodos(pageNumber),
+    queryFn: () =>
+      fetchApi<TodoWithUser>("todos", {
+        page: pageNumber,
+        pageSize: 10,
+        withPagination: true,
+      }),
     placeholderData: (prev) => prev,
   });
   const { data: users } = useQuery({
     queryKey: ["users"],
-    queryFn: () => fetchUsers(),
-    placeholderData: (prev) => prev,
+    queryFn: () => fetchApi<User>("users"),
   });
 
   const {
@@ -57,6 +61,7 @@ const TodoList = () => {
     } as Prisma.TodoCreateInput;
     addTodo.mutate(dataObject);
   };
+
   return (
     <>
       {isLoading || addTodo.isPending ? (
@@ -65,36 +70,21 @@ const TodoList = () => {
         </div>
       ) : (
         <div>
-          <div>
-            <div className="flex flex-wrap justify-center gap-6 mt-6">
-              {items &&
-                items.data.map((item: TodoWithUser) => {
-                  return <SingleTodo item={item} key={item.id} />;
-                })}
-            </div>
-            <div className="flex mt-4 flex-1 justify-center items-center ">
-              <div>
-                {pageNumber > 1 && (
-                  <button
-                    className="bg-yellow-400 text-black px-3 py-1 rounded mx-4 hover:bg-yellow-600 cursor-pointer"
-                    onClick={() => SetPage((prev) => prev - 1)}
-                  >
-                    Prev
-                  </button>
-                )}
+          {items && (
+            <Pagination<TodoWithUser>
+              withPagination
+              onPageChange={SetPage}
+              page={items.pagination?.page ?? 1}
+              totalPages={items.pagination?.totalPages ?? 1}
+              items={items}
+            >
+              <div className="flex flex-wrap justify-center gap-6 mt-6">
+                {items?.data.map((item) => (
+                  <SingleTodo item={item} key={item.id} />
+                ))}
               </div>
-              <div>
-                {items && pageNumber < items.totalPages && (
-                  <button
-                    className="bg-green-600 text-white px-3 py-1 rounded mx-4 hover:bg-green-800 cursor-pointer"
-                    onClick={() => SetPage((prev) => prev + 1)}
-                  >
-                    Next
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+            </Pagination>
+          )}
           <div className=" bg-gray-900 px-6 py-2 sm:py-32 lg:px-8 rounded-4xl mt-5 w-2xl mx-auto">
             <form
               onSubmit={handleSubmit(onSubmit)}
@@ -135,7 +125,7 @@ const TodoList = () => {
                   >
                     <option value="">Select a User</option>
                     {users &&
-                      users.map((user) => (
+                      users.map((user: User) => (
                         <option key={user.id} value={user.id}>
                           {user.name} - {user.role}
                         </option>
