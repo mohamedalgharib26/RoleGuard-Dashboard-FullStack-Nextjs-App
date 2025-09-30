@@ -6,7 +6,7 @@ type Props = {
 
 async function UserDetails({ params }: Props) {
   const { id } = await params;
-  const data = await fetch(`http://localhost:3000/users/${id}`);
+  const data = await fetch(`http://localhost:3000/api/users/${id}`);
   const user = await data.json();
 
   return (

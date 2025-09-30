@@ -13,7 +13,34 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model Product {
+model Products {
   id    String @id @default(cuid())
   title String
+}
+
+enum Role {
+  User
+  Admin
+  Moderator
+}
+
+enum Status {
+  Active
+  Inactive
+}
+
+model Users {
+  id     String @id @default(cuid())
+  name   String @unique
+  email  String @unique
+  role   Role   @default(User)
+  status Status @default(Active)
+  todos  Todo[]
+}
+
+model Todo {
+  id     String  @id @default(cuid())
+  title  String
+  userId String?
+  user   Users?  @relation(fields: [userId], references: [id])
 }

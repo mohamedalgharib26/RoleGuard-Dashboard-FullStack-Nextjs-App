@@ -1,22 +1,36 @@
 "use client";
-export type Todo = {
-  id: string;
-  title: string;
+
+import { TodoWithUser } from "../api/todos/route";
+
+type SingleTodoProps = {
+  item: TodoWithUser;
 };
 
-const SingleTodo = ({ id, title }: Todo) => {
+const SingleTodo = ({ item }: SingleTodoProps) => {
+  const { id, title, user } = item;
+
   return (
-    <div>
-      {" "}
-      <div
-        style={{
-          padding: "30px",
-          border: "1px solid #ccc",
-          margin: "15px",
-        }}
-      >
-        <h4 className="m-1">{id}</h4>
-        <h2 className="my-3">{title}</h2>
+    <div className="flex justify-center">
+      <div className="w-full max-w-sm rounded-2xl bg-white border border-gray-100 shadow-md hover:shadow-xl transition-shadow duration-300 p-6">
+        {/* ID */}
+        <h4 className="text-xs text-gray-400 break-all">{id}</h4>
+
+        {/* Title */}
+        <h2 className="mt-2 text-lg font-semibold text-gray-800 hover:text-indigo-600 transition-colors">
+          {title}
+        </h2>
+
+        {/* User Info */}
+        <div className="mt-4 space-y-1">
+          <p className="text-gray-700">
+            <span className="font-medium text-indigo-500">User:</span>{" "}
+            {user?.name ?? "No User"}
+          </p>
+          <p className="text-gray-700">
+            <span className="font-medium text-indigo-500">Role:</span>{" "}
+            {user?.role ?? "—"}
+          </p>
+        </div>
       </div>
     </div>
   );

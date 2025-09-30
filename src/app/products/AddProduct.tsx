@@ -1,16 +1,17 @@
 "use client";
+import Loader from "@/Components/Loader";
 import { PostData } from "@/store/Api/ReactQuery";
-import { Product } from "@prisma/client";
+import { Products } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 
-type AddProductFormData = {
+export type AddProductFormData = {
   id: string;
   title: string;
 };
 interface AddProductProps {
-  onAddProduct: (product: Product) => void;
+  onAddProduct: (product: Products) => void;
 }
 const AddProduct: React.FC<AddProductProps> = ({ onAddProduct }) => {
   // Initialize form
@@ -22,8 +23,8 @@ const AddProduct: React.FC<AddProductProps> = ({ onAddProduct }) => {
 
   const qc = useQueryClient();
   const Mutation = useMutation({
-    mutationFn: async (body: Product) =>
-      PostData<Product, Product>("http://localhost:3000/api/products", body, {
+    mutationFn: async (body: Products) =>
+      PostData<Products, Products>("http://localhost:3000/api/products", body, {
         method: "POST",
       }),
     onSuccess: async () => {
@@ -34,10 +35,17 @@ const AddProduct: React.FC<AddProductProps> = ({ onAddProduct }) => {
   });
 
   const onSubmit: SubmitHandler<AddProductFormData> = async (formData) => {
-    const dataObject = { ...formData } as Product;
+    const dataObject = { ...formData } as Products;
     Mutation.mutate(dataObject);
   };
 
+  if (Mutation.isPending) {
+    return (
+      <div className="flex justify-center items-start min-h-screen mt-3">
+        <Loader loading={true} />
+      </div>
+    );
+  }
   return (
     <div className=" isolate bg-gray-900 px-6 py-24 sm:py-32 lg:px-8 rounded-4xl mt-2.5">
       <form

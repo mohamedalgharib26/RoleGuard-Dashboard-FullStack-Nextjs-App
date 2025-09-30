@@ -10,13 +10,13 @@ export function useDeleteUser() {
 
   return useMutation({
     mutationFn: async (id: string) =>
-      PostData<void, void>(`http://localhost:3000/users/${id}`, undefined, {
+      PostData<void, void>(`http://localhost:3000/api/users/${id}`, undefined, {
         method: "DELETE",
       }),
     onSuccess: async () => {
       toast.success("User Deleted ...");
       await qc.invalidateQueries({ queryKey: ["users"] });
     },
-    onError: () => toast.error("Error .. "),
+    onError: (err) => toast.error(err.message),
   });
 }

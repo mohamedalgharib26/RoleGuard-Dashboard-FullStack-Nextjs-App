@@ -53,7 +53,7 @@ const ProductsList: React.FC<props> = ({ initialProducts }) => {
       {products && (
         <div>
           <h3 className="text-center mt-3">Cart Count: {cartCount}</h3>
-          <div className="flex flex-1 justify-center items-center">
+          <div className="flex  justify-center items-center md:flex-wrap">
             {products.map((product: Product) => (
               <MemoizedProductItem
                 key={product.id}
