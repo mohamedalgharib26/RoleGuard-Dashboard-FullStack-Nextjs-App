@@ -36,6 +36,7 @@ const TodoList = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<AddTodoFormData>();
 
   const qc = useQueryClient();
@@ -51,6 +52,7 @@ const TodoList = () => {
     onSuccess: async () => {
       toast.success("Todo  Added successfully ...");
       await qc.invalidateQueries();
+      reset();
     },
     onError: () => toast.error("Error .. "),
   });
