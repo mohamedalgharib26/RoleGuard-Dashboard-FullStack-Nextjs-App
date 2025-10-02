@@ -1,3 +1,6 @@
+"use client";
+import { useSession } from "next-auth/react";
+
 // app/page.tsx (Next.js 13+ App Router)
 export default function HomePage() {
   return (

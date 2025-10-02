@@ -2,9 +2,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
+import { useState } from "react";
+import Loader from "./Loader";
 
+type link = {
+  url: string;
+  title: string;
+};
 const Navbar = () => {
-  const links: { url: string; title: string }[] = [
+  const links: link[] = [
     {
       url: "/",
       title: "Home",
@@ -21,6 +28,8 @@ const Navbar = () => {
       url: "/users",
       title: "Users",
     },
+  ];
+  const AuthLinks: link[] = [
     {
       url: "/login",
       title: "Login",
@@ -30,8 +39,20 @@ const Navbar = () => {
       title: "Signup",
     },
   ];
-  const pathname = usePathname();
+  const [loading, setLoading] = useState(false);
 
+  const pathname = usePathname();
+  const { status } = useSession();
+
+  const handleLogout = async () => {
+    setLoading(true);
+    await signOut({ callbackUrl: "/" });
+  };
+  if (loading) {
+    <div className="flex flex-col justify-center items-center min-h-screen ">
+      <Loader loading={true} />
+    </div>;
+  }
   return (
     <nav className="relative bg-gray-800/50 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -49,31 +70,6 @@ const Navbar = () => {
             </div>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
-                {/* <Link
-                  aria-current="page"
-                  className="rounded-md bg-gray-950/50 px-3 py-2 text-sm font-medium text-white"
-                  href={"/"}
-                >
-                  Home
-                </Link>
-                <Link
-                  href={"/products"}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white"
-                >
-                  Products
-                </Link>
-                <Link
-                  href={"/users"}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white"
-                >
-                  Users
-                </Link>
-                <Link
-                  href={"/todos"}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white"
-                >
-                  Todos
-                </Link> */}
                 {links.map((navbarLink) => {
                   const isActive = pathname === navbarLink.url;
                   return (
@@ -92,27 +88,35 @@ const Navbar = () => {
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            <button
-              type="button"
-              className="relative rounded-full p-1 text-gray-400 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500"
-            >
-              <span className="absolute -inset-1.5"></span>
-              <span className="sr-only">View notifications</span>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                aria-hidden="true"
-                className="size-6"
-              >
-                <path
-                  d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
+            <div className="relative ml-3">
+              <div>
+                {status === "authenticated" ? (
+                  <button
+                    onClick={handleLogout}
+                    className="rounded-md bg-indigo-500 px-4 py-2 text-white font-semibold hover:bg-indigo-400 text-sm"
+                  >
+                    LogOut
+                  </button>
+                ) : (
+                  <div className="flex space-x-4">
+                    {AuthLinks.map((navbarLink) => {
+                      const isActive = pathname === navbarLink.url;
+                      return (
+                        <Link
+                          className={`rounded-md px-3 py-2 text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-400  ${
+                            isActive && "bg-indigo-500"
+                          }`}
+                          href={navbarLink.url}
+                          key={navbarLink.url}
+                        >
+                          {navbarLink.title}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

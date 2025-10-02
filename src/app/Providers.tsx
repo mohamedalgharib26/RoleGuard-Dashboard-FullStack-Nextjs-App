@@ -6,9 +6,10 @@ import { Provider } from "react-redux";
 import store from "@/store";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import Navbar from "@/Components/Navbar";
 import { usePathname } from "next/navigation";
+import HomePage from "./HomePage";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   // Create QueryClient inside the client component
@@ -23,20 +24,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
         },
       })
   );
-  const pathname = usePathname();
-
-  const hideNavbarOn = ["/login", "/register"];
-
-  const showNavbar = !hideNavbarOn.includes(pathname);
 
   return (
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
         <SessionProvider>
-          <>
-            {showNavbar && <Navbar />}
-            <main>{children}</main>
-          </>
+          <HomePage>{children}</HomePage>
         </SessionProvider>
       </Provider>
       <Toaster />
