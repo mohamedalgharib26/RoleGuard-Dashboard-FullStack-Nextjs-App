@@ -19,6 +19,8 @@ const eslintConfig = [
       "build/**",
       "next-env.d.ts",
       "src/generated/**",
+      "prisma/",
+      "src/generated/prisma/**",
     ],
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
