@@ -59,21 +59,23 @@ export async function fetchApi<T>(
 // ✅ Implementation
 export async function fetchApi<T>(
   url: string,
-  opt?: PaginationOptions
+  opt?: PaginationOptions & { withPagination?: boolean }
 ): Promise<PaginationResult<T> | T[]> {
+  let fullUrl = `http://localhost:3000/api/${url}`;
   if (opt?.withPagination) {
-    url = `http://localhost:3000/api/${url}?page=${opt.page ?? 1}&pageSize=${
-      opt.pageSize ?? 10
-    }`;
-  } else {
-    url = `http://localhost:3000/api/${url}`;
+    fullUrl += `?page=${opt.page ?? 1}&pageSize=${opt.pageSize ?? 10}`;
   }
 
-  const res = await fetch(url);
+  const res = await fetch(fullUrl);
   if (!res.ok) throw new Error("Error Come True");
-  const data = await res.json();
 
-  return opt?.withPagination ? (data as PaginationResult<T>) : (data as T[]);
+  const json = await res.json();
+
+  if (opt?.withPagination) {
+    return json as PaginationResult<T>;
+  } else {
+    return Array.isArray(json.data) ? json.data : json;
+  }
 }
 
 // Mutation

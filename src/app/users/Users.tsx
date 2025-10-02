@@ -34,7 +34,7 @@ const UsersComponent: React.FC = () => {
   function handleEdit(user: User): void {
     setSelectedUserForEdit({ ...user });
   }
-
+  console.log(users);
   return (
     <>
       {isLoading ? (

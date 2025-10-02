@@ -21,7 +21,16 @@ export async function GET(
   try {
     const result = await paginate<TodoWithUser>(req, prisma.todo, {
       withPagination: true,
+      include: {
+        user: {
+          select: {
+            role: true,
+            name: true,
+          },
+        },
+      },
     });
+
     return NextResponse.json<PaginationResult<TodoWithUser>>(result);
   } catch (err: unknown) {
     return handleError(err);
