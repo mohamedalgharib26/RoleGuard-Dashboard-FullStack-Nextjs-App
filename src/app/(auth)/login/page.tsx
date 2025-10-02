@@ -3,45 +3,40 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PostData } from "@/store/Api/ReactQuery";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { User } from "next-auth";
 import toast from "react-hot-toast";
-
-interface userLogin {
-  email: string;
-  password: string;
-}
+import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const qc = useQueryClient();
 
-  const addUserMutation = useMutation({
-    mutationFn: async (data: userLogin) =>
-      PostData<userLogin, User>("http://localhost:3000/api/auth/login", data, {
-        method: "POST",
-      }),
-    onSuccess: () => {
-      toast.success("User Added");
-      qc.invalidateQueries({ queryKey: ["user"] });
-      router.push("/users");
-    },
-    onError: (err: any) => toast.error(err.message),
-  });
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    setLoading(false);
-    const data = {
+    const res = await signIn("credentials", {
+      redirect: false,
       email,
       password,
-    };
-    addUserMutation.mutate(data);
+    });
+
+    setLoading(false);
+
+    if (res?.error) {
+      toast.error("Invalid credentials");
+    } else {
+      toast.success("Login successful");
+
+      // Redirect based on role
+      if (res?.ok) {
+        const role = (res as any).role;
+        if (role === "Admin") router.push("/todos");
+        else if (role === "Moderator") router.push("/products");
+        else router.push("/users");
+      }
+    }
   };
 
   return (

@@ -30,28 +30,18 @@ enum Status {
 }
 
 model User {
-  id             String         @id @default(cuid())
-  name           String         @unique
-  email          String         @unique
-  role           Role           @default(User)
-  status         Status         @default(Active)
+  id             String    @id @default(cuid())
+  name           String    @unique
+  email          String    @unique
+  role           Role      @default(User)
+  status         Status    @default(Active)
   emailVerified  DateTime?
   image          String?
   hashedPassword String?
   accounts       Account[]
   sessions       Session[]
-  refreshTokens  RefreshToken[]
 
   todos Todo[]
-}
-
-model RefreshToken {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  expiresAt DateTime
-  createdAt DateTime @default(now())
 }
 
 model Account {
