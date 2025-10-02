@@ -1,4 +1,4 @@
-import { Todo } from "@/app/todos/Todo";
+import { Todo } from "@prisma/client";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 type Pagination = {
   page?: number;

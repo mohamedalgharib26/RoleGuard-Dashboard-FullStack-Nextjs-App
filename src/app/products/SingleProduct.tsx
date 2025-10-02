@@ -1,8 +1,8 @@
-import { Product } from "@prisma/client";
+import { Products } from "@prisma/client";
 import { memo } from "react";
 
 interface ProductItemProps {
-  product: Product;
+  product: Products;
   onAddToCart: (productId: string) => void;
   DeleteProduct: (productId: string) => void;
 }

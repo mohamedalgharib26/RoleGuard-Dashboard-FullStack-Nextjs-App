@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { setError, setLoading } from "../ui/UiSlice";
-import type { Todo } from "../../features/todos/Todo";
+import { Todo } from "@prisma/client";
 
 export const fetchTodos = createAsyncThunk<Todo[]>(
   "Todos/fetchTodos",

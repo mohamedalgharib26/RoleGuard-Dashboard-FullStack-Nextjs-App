@@ -1,20 +1,42 @@
+// src/app/api/users/[id]/route.ts
+
 import prisma from "@/lib/prisma";
 import { ErrorResponse, handleError } from "@/utils/handleError";
 import { User, Prisma } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-interface Props {
-  params: { id: string };
-}
-
-export async function PUT(
-  request: Request,
-  { params }: Props
+// ✅ Get User by ID
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<User | ErrorResponse>> {
   try {
-    const body: Prisma.UserUpdateInput = await request.json();
-    const { id } = params;
+    const { id } = await context.params; // ✅ لازم await
     if (!id) throw new Error("ID missing");
+
+    const user = await prisma.user.findUnique({ where: { id } });
+
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(user);
+  } catch (error: unknown) {
+    return handleError(error);
+  }
+}
+
+// ✅ Update User by ID
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+): Promise<NextResponse<User | ErrorResponse>> {
+  try {
+    const { id } = await context.params; // ✅ await
+    if (!id) throw new Error("ID missing");
+
+    const body: Prisma.UserUpdateInput = await request.json();
+
     const data = await prisma.user.update({
       where: { id },
       data: body,
@@ -26,18 +48,19 @@ export async function PUT(
   }
 }
 
+// ✅ Delete User by ID
 export async function DELETE(
-  request: Request,
-  { params }: Props
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<User | ErrorResponse>> {
-  const { id } = params;
-  if (!id) throw new Error("ID missing");
   try {
-    const data = await prisma.user.delete({
-      where: { id },
-    });
+    const { id } = await context.params; // ✅ await
+    if (!id) throw new Error("ID missing");
+
+    const data = await prisma.user.delete({ where: { id } });
+
     return NextResponse.json(data);
-  } catch (error) {
+  } catch (error: unknown) {
     return handleError(error);
   }
 }

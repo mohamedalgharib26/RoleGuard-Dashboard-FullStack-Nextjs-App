@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { setError, setLoading } from "../ui/UiSlice";
-import type { Product } from "../../features/products/ProductsList";
+import { Product } from "@/generated/prisma";
 
 export const fetchProducts = createAsyncThunk<Product[]>(
   "products/fetchProducts",
