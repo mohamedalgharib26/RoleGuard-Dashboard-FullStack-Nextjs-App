@@ -1,6 +1,4 @@
 import { PaginationResult } from "@/lib/pagination";
-import type { Post } from "../../Zustand";
-import { TodoWithUser } from "@/app/api/todos/route";
 
 export interface User {
   id: string;
@@ -86,6 +84,7 @@ export const PostData = async <TBody, TResponse>(
 ): Promise<TResponse> => {
   const res = await fetch(url, {
     method: options?.method || "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...(options?.headers || {}),

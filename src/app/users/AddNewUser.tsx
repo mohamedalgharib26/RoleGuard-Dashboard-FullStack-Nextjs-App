@@ -14,8 +14,8 @@ import { AddNewUserInput, addNewUserSchema } from "@/validation";
 
 interface UserManagementProps {
   editingUserProp?:
-    | Prisma.UsersCreateInput
-    | Prisma.UsersUpdateInput
+    | Prisma.UserCreateInput
+    | Prisma.UserUpdateInput
     | User
     | null;
   onUpdateComplete?: () => void;
@@ -44,8 +44,8 @@ const UserManagement = ({
   });
 
   const addUserMutation = useMutation({
-    mutationFn: async (data: Prisma.UsersCreateInput) =>
-      PostData<Prisma.UsersCreateInput, User>(
+    mutationFn: async (data: Prisma.UserCreateInput) =>
+      PostData<Prisma.UserCreateInput, User>(
         "http://localhost:3000/api/users",
         data,
         { method: "POST" }
@@ -59,8 +59,8 @@ const UserManagement = ({
   });
 
   const updateUserMutation = useMutation({
-    mutationFn: async (data: Prisma.UsersUpdateInput) =>
-      PostData<Prisma.UsersUpdateInput, User>(
+    mutationFn: async (data: Prisma.UserUpdateInput) =>
+      PostData<Prisma.UserUpdateInput, User>(
         `http://localhost:3000/api/users/${data.id}`,
         data,
         { method: "PUT" }
@@ -87,14 +87,14 @@ const UserManagement = ({
     if (editingUserProp) {
       if (!editingUserProp?.id) return;
 
-      const payload: Prisma.UsersUpdateInput = {
+      const payload: Prisma.UserUpdateInput = {
         ...data,
         role: data.role ? (data.role as Role) : undefined,
         status: data.status ? (data.status as Status) : undefined,
       };
       updateUserMutation.mutate(payload);
     } else {
-      const payload: Prisma.UsersCreateInput = {
+      const payload: Prisma.UserCreateInput = {
         ...data,
         role: data.role ? (data.role as Role) : undefined,
         status: data.status ? (data.status as Status) : undefined,

@@ -29,18 +29,70 @@ enum Status {
   Inactive
 }
 
-model Users {
-  id     String @id @default(cuid())
-  name   String @unique
-  email  String @unique
-  role   Role   @default(User)
-  status Status @default(Active)
-  todos  Todo[]
+model User {
+  id             String         @id @default(cuid())
+  name           String         @unique
+  email          String         @unique
+  role           Role           @default(User)
+  status         Status         @default(Active)
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  accounts       Account[]
+  sessions       Session[]
+  refreshTokens  RefreshToken[]
+
+  todos Todo[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 model Todo {
   id     String  @id @default(cuid())
   title  String
   userId String?
-  user   Users?  @relation(fields: [userId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id])
 }

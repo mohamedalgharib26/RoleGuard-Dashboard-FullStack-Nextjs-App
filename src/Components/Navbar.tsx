@@ -21,6 +21,14 @@ const Navbar = () => {
       url: "/users",
       title: "Users",
     },
+    {
+      url: "/login",
+      title: "Login",
+    },
+    {
+      url: "/signup",
+      title: "Signup",
+    },
   ];
   const pathname = usePathname();
 

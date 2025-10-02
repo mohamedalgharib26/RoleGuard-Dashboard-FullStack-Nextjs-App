@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { ErrorResponse, handleError } from "@/utils/handleError";
-import { Users, Prisma } from "@prisma/client";
+import { User, Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 interface Props {
@@ -10,12 +10,12 @@ interface Props {
 export async function PUT(
   request: Request,
   { params }: Props
-): Promise<NextResponse<Users | ErrorResponse>> {
+): Promise<NextResponse<User | ErrorResponse>> {
   try {
-    const body: Prisma.UsersUpdateInput = await request.json();
+    const body: Prisma.UserUpdateInput = await request.json();
     const { id } = params;
     if (!id) throw new Error("ID missing");
-    const data = await prisma.users.update({
+    const data = await prisma.user.update({
       where: { id },
       data: body,
     });
@@ -29,11 +29,11 @@ export async function PUT(
 export async function DELETE(
   request: Request,
   { params }: Props
-): Promise<NextResponse<Users | ErrorResponse>> {
+): Promise<NextResponse<User | ErrorResponse>> {
   const { id } = params;
   if (!id) throw new Error("ID missing");
   try {
-    const data = await prisma.users.delete({
+    const data = await prisma.user.delete({
       where: { id },
     });
     return NextResponse.json(data);
